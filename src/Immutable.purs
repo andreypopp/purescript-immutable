@@ -70,7 +70,10 @@ module Immutable.Map (
   Map(..),
   empty,
   get,
-  set
+  set,
+  remove,
+  update,
+  merge
   ) where
 
 import Data.Maybe
@@ -106,6 +109,24 @@ foreign import _set
   :: forall k v. Fn3 (Map k v) k v (Map k v)
 
 set = runFn3 _set
+
+foreign import _remove
+  "function _get(m, k) { return m.remove(k); }"
+  :: forall k v. Fn2 (Map k v) k (Map k v)
+
+remove = runFn2 _remove
+
+foreign import _update
+  "function _update(m, k, f) { return m.update(k, f); }"
+  :: forall k v. Fn3 (Map k v) k (v -> v) (Map k v)
+
+update = runFn3 _update
+
+foreign import _merge
+  "function _merge(m, om) { return m.merge(k, f); }"
+  :: forall k v. Fn2 (Map k v) (Map k v) (Map k v)
+
+merge = runFn2 _merge
 
 module Immutable.Main where
 
