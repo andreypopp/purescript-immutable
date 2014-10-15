@@ -11,4 +11,4 @@ clean:
 
 lib/purescript-immutable.js: $(SRC)
 	@mkdir -p $(@D)
-	@psc -o $@ $(DEPS) $(^) --main Data.Immutable.Vector
+	@psc -o $@ $(DEPS) $(^) --main Immutable.Main
