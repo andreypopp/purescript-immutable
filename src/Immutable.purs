@@ -35,11 +35,19 @@ maybeUndefined = runFn3 _maybeUndefined Nothing Just
 module Immutable.Vector (
   Vector(..),
   empty,
-  get
+  get,
+  set,
+  push,
+  pop,
+  unshift,
+  update,
+  map
   ) where
 
 import Data.Maybe
 import Data.Function
+import Data.Foldable
+import Data.Monoid
 import Immutable.Utils
 
 foreign import data Mod :: *
@@ -63,6 +71,50 @@ foreign import _get
 
 get = runFn3 _get maybeUndefined
 
+foreign import _set
+  "function _set(v, idx, val) { return v.set(idx, val); }"
+  :: forall v. Fn3 (Vector v) Number v (Vector v)
+
+set = runFn3 _set
+
+foreign import _push
+  """
+  function _push(v, val) {
+    return v.push(val);
+  }
+  """
+  :: forall v. Fn2 (Vector v) v (Vector v)
+
+push = runFn2 _push
+
+foreign import pop
+  """
+  function pop(v) {
+    return v.pop();
+  }
+  """
+  :: forall v. Vector v -> Vector v
+
+foreign import _unshift
+  """
+  function _unshift(v, val) {
+    return v.unshift(val);
+  }
+  """
+  :: forall v. Fn2 (Vector v) v (Vector v)
+
+unshift = runFn2 _unshift
+
+foreign import _update
+  """
+  function _update(v, idx, f) {
+    return v.update(idx, f);
+  }
+  """
+  :: forall v. Fn3 (Vector v) Number (v -> v) (Vector v)
+
+update = runFn3 _update
+
 foreign import _map
   """
   function _map(f, v) {
@@ -72,6 +124,26 @@ foreign import _map
   :: forall a b. Fn2 (a -> b) (Vector a) (Vector b)
 
 map = runFn2 _map
+
+foreign import _reduce
+  """
+  function _reduce(f, init, v) {
+    return v.reduce(f, init);
+  }
+  """
+  :: forall a b. Fn3 (b -> a -> b) b (Vector a) b
+
+reduce = runFn3 _reduce
+
+foreign import _reduceRight
+  """
+  function _reduceRight(f, init, v) {
+    return v.reduceRight(f, init);
+  }
+  """
+  :: forall a b. Fn3 (a -> b -> b) b (Vector a) b
+
+reduceRight = runFn3 _reduceRight
 
 instance showVector :: Show (Vector v) where
   show = unsafeShow
@@ -83,6 +155,11 @@ instance eqVector :: Eq (Vector v) where
 instance functorVector :: Functor Vector where
   (<$>) = map
 
+instance foldableVector :: Foldable Vector where
+  foldl = reduce
+  foldr = reduceRight
+  foldMap f v = foldl (\acc x -> f x <> acc) mempty v
+
 module Immutable.Map (
   Map(..),
   empty,
@@ -90,7 +167,8 @@ module Immutable.Map (
   set,
   remove,
   update,
-  merge
+  merge,
+  map
   ) where
 
 import Data.Maybe
@@ -165,4 +243,5 @@ import Debug.Trace
 
 main = do
   let m = Map.set Map.empty "l" 1
-  print m
+  let m2 = Map.remove m "l"
+  print m2
