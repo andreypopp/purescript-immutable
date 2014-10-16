@@ -1,0 +1,26 @@
+{
+  "name": "purescript-immutable",
+  "version": "0.0.0",
+  "homepage": "https://github.com/andreypopp/purescript-immutable",
+  "authors": [
+    "Andrey Popp <8mayday@gmail.com>"
+  ],
+  "description": "PureScript bindings to Immutable.js library of immutable persistent data structures",
+  "main": "./lib/purescript-immutable.js",
+  "keywords": [
+    "purescript"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "purescript-arrays": "~0.2.1",
+    "purescript-maybe": "~0.2.1",
+    "purescript-foldable-traversable": "~0.1.3"
+  }
+}
