@@ -41,7 +41,12 @@ module Immutable.Vector (
   pop,
   unshift,
   update,
-  map
+  map,
+  reduce,
+  reduceRight,
+  length,
+  first,
+  rest
   ) where
 
 import Data.Maybe
@@ -60,6 +65,30 @@ foreign import data Vector :: * -> *
 foreign import empty
   "var empty = mod.empty();"
   :: forall v. Vector v
+
+foreign import length
+  """
+  function length(v) {
+    return v.length;
+  }
+  """
+  :: forall v. Vector v -> Number
+
+foreign import first
+  """
+  function first(v) {
+    return v.first();
+  }
+  """
+  :: forall v. Vector v -> v
+
+foreign import rest
+  """
+  function rest(v) {
+    return v.rest();
+  }
+  """
+  :: forall v. Vector v -> Vector v
 
 foreign import _get
   """
