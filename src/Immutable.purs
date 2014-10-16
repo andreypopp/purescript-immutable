@@ -49,6 +49,30 @@ foreign import mod
 
 foreign import data Vector :: * -> *
 
+foreign import empty
+  "var empty = mod.empty();"
+  :: forall v. Vector v
+
+foreign import _get
+  """
+  function _get(maybeUndefined, v, idx) {
+    return maybeUndefined(v.get(idx));
+  }
+  """
+  :: forall v. Fn3 (v -> Maybe v) (Vector v) Number (Maybe v)
+
+get = runFn3 _get maybeUndefined
+
+foreign import _map
+  """
+  function _map(f, v) {
+    return v.map(f);
+  }
+  """
+  :: forall a b. Fn2 (a -> b) (Vector a) (Vector b)
+
+map = runFn2 _map
+
 instance showVector :: Show (Vector v) where
   show = unsafeShow
 
@@ -56,15 +80,8 @@ instance eqVector :: Eq (Vector v) where
   (==) = unsafeEq
   (/=) x y = not (x == y)
 
-foreign import empty
-  "var empty = mod.empty();"
-  :: forall v. Vector v
-
-foreign import _get
-  "function _get(maybeUndefined, v, idx) { return maybeUndefined(v.get(idx)); }"
-  :: forall v. Fn3 (v -> Maybe v) (Vector v) Number (Maybe v)
-
-get = runFn3 _get maybeUndefined
+instance functorVector :: Functor Vector where
+  (<$>) = map
 
 module Immutable.Map (
   Map(..),
@@ -86,13 +103,6 @@ foreign import mod
   :: Mod
 
 foreign import data Map :: * -> * -> *
-
-instance showMap :: Show (Map k v) where
-  show = unsafeShow
-
-instance eqMap :: Eq (Map k v) where
-  (==) = unsafeEq
-  (/=) x y = not (x == y)
 
 foreign import empty
   "var empty = mod.empty()"
@@ -127,6 +137,26 @@ foreign import _merge
   :: forall k v. Fn2 (Map k v) (Map k v) (Map k v)
 
 merge = runFn2 _merge
+
+foreign import _map
+  """
+  function _map(f, m) {
+    return m.map(f);
+  }
+  """
+  :: forall k a b. Fn2 (a -> b) (Map k a) (Map k b)
+
+map = runFn2 _map
+
+instance showMap :: Show (Map k v) where
+  show = unsafeShow
+
+instance eqMap :: Eq (Map k v) where
+  (==) = unsafeEq
+  (/=) x y = not (x == y)
+
+instance functorMap :: Functor (Map k) where
+  (<$>) = map
 
 module Immutable.Main where
 
