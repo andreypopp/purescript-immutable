@@ -116,6 +116,16 @@ foreign import _push
 
 push = runFn2 _push
 
+foreign import _concat
+  """
+  function _concat(v1, v2) {
+    return v1.concat(v2);
+  }
+  """
+  :: forall v. Fn2 (Vector v) (Vector v) (Vector v)
+
+concat = runFn2 _concat
+
 foreign import pop
   """
   function pop(v) {
@@ -184,6 +194,12 @@ instance eqVector :: Eq (Vector v) where
 instance functorVector :: Functor Vector where
   (<$>) = map
 
+instance semigroupVector :: Semigroup (Vector v) where
+  (<>) = concat
+
+instance monoidVector :: Monoid (Vector v) where
+  mempty = empty
+
 instance foldableVector :: Foldable Vector where
   foldl = reduce
   foldr = reduceRight
@@ -202,6 +218,7 @@ module Immutable.Map (
 
 import Data.Maybe
 import Data.Function
+import Data.Monoid
 import Immutable.Utils
 
 foreign import data Mod :: *
@@ -264,6 +281,12 @@ instance eqMap :: Eq (Map k v) where
 
 instance functorMap :: Functor (Map k) where
   (<$>) = map
+
+instance semigroupMap :: Semigroup (Map k v) where
+  (<>) = merge
+
+instance monoidMap :: Monoid (Map k v) where
+  mempty = empty
 
 module Immutable.Main where
 
