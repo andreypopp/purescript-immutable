@@ -111,7 +111,7 @@ foreign import _set
 set = runFn3 _set
 
 foreign import _remove
-  "function _get(m, k) { return m.remove(k); }"
+  "function _remove(m, k) { return m.remove(k); }"
   :: forall k v. Fn2 (Map k v) k (Map k v)
 
 remove = runFn2 _remove
